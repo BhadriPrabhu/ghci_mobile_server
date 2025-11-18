@@ -15,6 +15,21 @@ export const getAccountDetails = async (req,res) => {
     }
 }
 
+export const getAccountNumber = async (req,res) => {
+    try{
+        const { email, phone } = req.body;
+
+        if (!email || !phone) {
+            return res.status(400).json({ error: "Email and phone are required" });
+        }
+
+        const result = await pool.query("SELECT account_no FROM accounts WHERE email = $1 AND phone_no = $2",[email,phone]);
+        res.json(result.rows)
+    } catch(err){
+        console.log("Error",err);
+    }
+}
+
 export const getAccountBalance = async (req,res) => {
     try{
         const { email, phone, account_no } = req.body;
