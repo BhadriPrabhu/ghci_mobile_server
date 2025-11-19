@@ -86,7 +86,9 @@ CREATE TABLE transactions (
     category TEXT,
     receipt_url TEXT,
     is_flagged BOOLEAN,
-    created_at TIMESTAMP
+    created_at TIMESTAMP,
+    from_upi TEXT,
+    to_upi TEXT;
 );
 
 ----------------------------------------------------------
