@@ -14,3 +14,18 @@ export const getUsers = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getPassword = async (req, res) => {
+  try {
+    const { account_no } = req.body;
+
+    if (!account_no) {
+      return res.status(400).json({ error: "Account No. is required" });
+    }
+
+    const result = await pool.query("SELECT password FROM users WHERE account_no = $1",[account_no]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
