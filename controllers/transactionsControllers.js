@@ -60,7 +60,7 @@ export const transferMoney = async (req, res) => {
 
         // 🔍 1. VERIFY PIN
         const pinResult = await client.query(
-            `SELECT password FROM users WHERE email = $1 AND phone = $2`,
+            `SELECT password FROM users WHERE email = $1 AND phone_no = $2`,
             [email, phone]
         );
 
