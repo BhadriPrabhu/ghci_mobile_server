@@ -1,4 +1,4 @@
-import { getAvailInvestDetails, getMyInvestDetails } from "../controllers/investControllers";
+import { getAvailInvestDetails, getMyInvestDetails } from "../controllers/investControllers.js";
 import express from "express";
 
 const router = express.Router();
