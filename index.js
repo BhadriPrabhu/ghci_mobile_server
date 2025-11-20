@@ -9,6 +9,7 @@ import loanRoutes from "./routes/loanRoutes.js";
 import policyRoutes from "./routes/policyRoutes.js";
 import insuranceRoutes from "./routes/insuranceRoutes.js";
 import transactionsRoutes from "./routes/transactionsRoutes.js";
+import investRoutes from "./routes/investRoutes.js";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api/loan", loanRoutes);
 app.use("/api/policy", policyRoutes);
 app.use("/api/insurance", insuranceRoutes);
 app.use("/api/transaction", transactionsRoutes);
+app.use("/api/invest", investRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
