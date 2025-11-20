@@ -37,7 +37,8 @@ export const transferMoney = async (req, res) => {
             type,
             description,
             from_upi,
-            to_upi
+            to_upi,
+            pin
         } = req.body;
 
         if (!account_no || !from_acc || !to_acc) {
@@ -46,9 +47,31 @@ export const transferMoney = async (req, res) => {
         if (!amount) {
             return res.status(400).json({ error: "Amount is required" });
         }
+        if (!pin) {
+            return res.status(400).json({ error: "PIN is required" });
+        }
 
         await client.query("BEGIN");
 
+        // 🔍 1. VERIFY PIN
+        const pinResult = await client.query(
+            `SELECT password FROM users WHERE account_no = $1`,
+            [from_acc]
+        );
+
+        if (pinResult.rows.length === 0) {
+            await client.query("ROLLBACK");
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const storedPassword = pinResult.rows[0].password;
+
+        if (storedPassword !== pin) {
+            await client.query("ROLLBACK");
+            return res.status(401).json({ error: "Incorrect PIN" });
+        }
+
+        // 🔍 2. CHECK BALANCE
         const checkBalance = await client.query(
             `SELECT balance FROM accounts WHERE account_no = $1`,
             [from_acc]
@@ -64,6 +87,7 @@ export const transferMoney = async (req, res) => {
             return res.status(400).json({ error: "Insufficient balance" });
         }
 
+        // 🔄 3. PROCESS PAYMENT
         await client.query(
             `UPDATE accounts SET balance = balance - $1 WHERE account_no = $2`,
             [amount, from_acc]
