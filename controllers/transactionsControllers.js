@@ -28,6 +28,8 @@ export const transferMoney = async (req, res) => {
 
     try {
         const {
+            email,
+            phone,
             account_no,
             name,
             from_acc,
@@ -41,6 +43,9 @@ export const transferMoney = async (req, res) => {
             pin
         } = req.body;
 
+        if (!email || !phone) {
+            return res.status(400).json({ error: "email and phone are required" });
+        }
         if (!account_no || !from_acc || !to_acc) {
             return res.status(400).json({ error: "Account numbers are required" });
         }
@@ -55,8 +60,8 @@ export const transferMoney = async (req, res) => {
 
         // 🔍 1. VERIFY PIN
         const pinResult = await client.query(
-            `SELECT password FROM users WHERE account_no = $1`,
-            [from_acc]
+            `SELECT password FROM users WHERE email = $1 AND phone = $2`,
+            [email, phone]
         );
 
         if (pinResult.rows.length === 0) {
