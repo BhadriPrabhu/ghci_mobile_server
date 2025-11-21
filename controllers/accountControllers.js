@@ -47,3 +47,20 @@ export const getAccountBalance = async (req,res) => {
         console.log("Error",err);
     }
 }
+
+export const getPrimaryAccount = async (req, res) => {
+  const { email, phone } = req.body;
+  try {
+    const result = await pool.query(
+      `SELECT * FROM accounts 
+       WHERE email = $1 AND phone_no = $2 AND is_primary_account = TRUE`,
+      [email, phone]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No primary account found" });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
