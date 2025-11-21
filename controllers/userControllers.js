@@ -15,6 +15,21 @@ export const getUsers = async (req, res) => {
   }
 };
 
+export const searchUser = async (req, res) => {
+  try {
+    const { query } = req.body;
+
+    if (!query) {
+      return res.status(400).json({ error: "Query is required" });
+    }
+
+    const result = await pool.query("SELECT phone_no, email, serial_no, name, upi_id, age, gender, language, address, pin_code FROM users WHERE email = $1 OR phone_no::text = $1",[query]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const getPassword = async (req, res) => {
   try {
     const { email, phone } = req.body;
