@@ -23,8 +23,18 @@ export const searchUser = async (req, res) => {
       return res.status(400).json({ error: "Query is required" });
     }
 
-    const result = await pool.query("SELECT phone_no, email, serial_no, name, upi_id, age, gender, language, address, pin_code FROM users WHERE email = $1 OR phone_no::text = $1",[query]);
+    const sql = `
+      SELECT phone_no, email, serial_no, name, upi_id, age, gender, language, address, pin_code
+      FROM users
+      WHERE 
+        email ILIKE $1
+        OR phone_no::text ILIKE $1
+    `;
+
+    const result = await pool.query(sql, [`%${query}%`]);
+
     res.json(result.rows);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
