@@ -27,7 +27,7 @@ export const searchUser = async (req, res) => {
       SELECT phone_no, email, serial_no, name, upi_id, age, gender, language, address, pin_code
       FROM users
       WHERE 
-        email ILIKE $1
+        upi_id ILIKE $1
         OR phone_no::text ILIKE $1
     `;
 
