@@ -10,6 +10,7 @@ import policyRoutes from "./routes/policyRoutes.js";
 import insuranceRoutes from "./routes/insuranceRoutes.js";
 import transactionsRoutes from "./routes/transactionsRoutes.js";
 import investRoutes from "./routes/investRoutes.js";
+import googleGeminiRoutes from "./routes/googleGeminiRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/policy", policyRoutes);
 app.use("/api/insurance", insuranceRoutes);
 app.use("/api/transaction", transactionsRoutes);
 app.use("/api/invest", investRoutes);
+app.use("/api/ai", googleGeminiRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
