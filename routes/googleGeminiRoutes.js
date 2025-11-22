@@ -1,7 +1,7 @@
 import multer from "multer";
-import { GoogleGenAI, createUserContent, createPartFromUri } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import express from "express";
-import path from "path";
+import fs from "fs";
 
 const upload = multer({ dest: "uploads/" });
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
@@ -13,28 +13,40 @@ router.post("/voice", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const filePath = req.file.path;
-    const ext = path.extname(req.file.originalname) || ".wav";
+    console.log("📥 Received audio:", req.file.path);
 
-    // Correct MIME type for React Native .wav
-    const mimeType = "audio/wav";
+    // Read file buffer
+    const audioBuffer = fs.readFileSync(req.file.path);
 
-    console.log("Received audio:", filePath);
-
-    const uploaded = await ai.files.upload({
-      file: filePath,
-      config: { mimeType },
+    // Upload to Gemini Files API
+    const uploadedFile = await ai.files.upload({
+      file: audioBuffer,
+      name: req.file.originalname,
+      mimeType: "audio/wav",
     });
 
+    console.log("🎉 Uploaded -> Gemini File ID:", uploadedFile.file.id);
+
+    // Gemini transcription
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: createUserContent([
-        createPartFromUri(uploaded.uri, mimeType),
-        "Transcribe the given speech to text (no timestamps)."
-      ])
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              fileData: {
+                fileUri: uploadedFile.file.uri,
+                mimeType: "audio/wav",
+              },
+            },
+            { text: "Transcribe this audio to text clearly." }
+          ]
+        }
+      ]
     });
 
-    res.json({ text: result.text() });
+    res.json({ text: result.response.text() });
 
   } catch (err) {
     console.error("❌ Server error:", err);
