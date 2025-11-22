@@ -15,24 +15,26 @@ router.post("/voice", upload.single("file"), async (req, res) => {
 
     console.log("📥 Received audio:", req.file.path);
 
-    // Read file buffer
+    // Read file
     const audioBuffer = fs.readFileSync(req.file.path);
 
-    // Upload properly to Gemini with required mimeType
+    // Upload to Gemini with ALL required fields
     const uploaded = await ai.files.upload({
       file: audioBuffer,
       name: req.file.originalname || "voice.wav",
 
-      // REQUIRED for Gemini
+      // REQUIRED FOR GEMINI
       mimeType: "audio/wav",
+      sizeBytes: audioBuffer.length,
+
       config: {
         mimeType: "audio/wav",
-      },
+      }
     });
 
     console.log("🎉 Uploaded to Gemini:", uploaded.file.uri);
 
-    // Request transcription
+    // Transcribe using Gemini
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
@@ -42,8 +44,8 @@ router.post("/voice", upload.single("file"), async (req, res) => {
             {
               fileData: {
                 fileUri: uploaded.file.uri,
-                mimeType: "audio/wav",
-              },
+                mimeType: "audio/wav"
+              }
             },
             { text: "Transcribe this audio clearly." }
           ]
