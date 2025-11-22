@@ -87,7 +87,8 @@ export const login = async (req, res) => {
       user: {
         email: user.email,
         phone: user.phone_no,
-      }
+      },
+      success: true
     });
 
   } catch (err) {
