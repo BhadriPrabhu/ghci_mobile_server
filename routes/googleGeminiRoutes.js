@@ -1,5 +1,6 @@
 import multer from "multer";
 import { GoogleGenAI, createUserContent, createPartFromUri } from "@google/genai";
+import express from "express";
 
 const upload = multer({ dest: "uploads/" });
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
