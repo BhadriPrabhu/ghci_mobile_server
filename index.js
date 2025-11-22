@@ -30,7 +30,6 @@ app.use("/api/policy", policyRoutes);
 app.use("/api/insurance", insuranceRoutes);
 app.use("/api/transaction", transactionsRoutes);
 app.use("/api/invest", investRoutes);
-app.use("/api/ai", googleGeminiRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

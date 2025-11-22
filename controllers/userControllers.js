@@ -54,3 +54,43 @@ export const getPassword = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const login = async (req, res) => {
+  try {
+    const { email, phone, password } = req.body;
+
+    // Validate input fields
+    if (!email || !phone || !password) {
+      return res.status(400).json({ error: "Email, phone, and password are required" });
+    }
+
+    // Check user exists with matching email + phone
+    const result = await pool.query(
+      "SELECT * FROM users WHERE email = $1 AND phone_no = $2",
+      [email, phone]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: "Invalid email or phone" });
+    }
+
+    const user = result.rows[0];
+
+    // Compare plain-text password
+    if (user.password !== password) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+
+    // Success
+    return res.json({
+      message: "Login successful",
+      user: {
+        email: user.email,
+        phone: user.phone_no,
+      }
+    });
+
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
