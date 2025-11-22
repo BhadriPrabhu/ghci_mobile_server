@@ -10,7 +10,6 @@ import policyRoutes from "./routes/policyRoutes.js";
 import insuranceRoutes from "./routes/insuranceRoutes.js";
 import transactionsRoutes from "./routes/transactionsRoutes.js";
 import investRoutes from "./routes/investRoutes.js";
-import googleGeminiRoutes from "./routes/googleGeminiRoutes.js";
 
 dotenv.config();
 
